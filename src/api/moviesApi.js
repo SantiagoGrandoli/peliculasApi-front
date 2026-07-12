@@ -1,5 +1,10 @@
 import axiosClient from './axiosClient';
 
+export const updateMovie = async (id, dto) => {
+  const response = await axiosClient.put(`/movies/${id}`, dto);
+  return response.data;
+};
+
 export const moviesApi = {
 getAll: ({ search, genreId, page = 1, spoiler, pageSize = 12 } = {}) =>
   axiosClient
@@ -12,7 +17,7 @@ getById: (id) => axiosClient.get(`/movies/${id}`).then((r) => r.data),
 
 create: (dto) => axiosClient.post('/movies', dto).then((r) => r.data),
 
-update: (id, dto) => axiosClient.put(`/movies/${id}`, dto).then((r) => r.data),
+update: (id, dto) => updateMovie(id, dto),
 
 remove: (id) => axiosClient.delete(`/movies/${id}`).then((r) => r.data),
 

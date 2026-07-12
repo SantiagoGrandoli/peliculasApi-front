@@ -43,6 +43,12 @@ export default function Navbar() {
             Películas
           </Link>
 
+          {isAuthenticated && (
+            <Link href="/" style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>
+              Listas
+            </Link>
+          )}
+
           {isAuthenticated && isAdmin && (
             <Link href="/admin" style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>
               Admin
