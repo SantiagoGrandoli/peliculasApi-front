@@ -127,7 +127,7 @@ export default function MovieDetail() {
   }
 
   const avg = getAverage(movie.ratings);
-  const genreNames = movie?.genres.map((g) => g.genreName).join(', ') || 'Sin género cargado';
+  const genreNames = movie.genres.map(g => g + " ");
   
 
   return (
