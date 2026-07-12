@@ -19,9 +19,10 @@ export const useAuthStore = create((set, get) => ({
   isAuthenticated: !!persisted?.token,
 
   login: (authResponse) => {
-    const { token, user } = authResponse;
+    const token = authResponse.token || authResponse.accessToken || authResponse.jwt;
+    const user = authResponse.user || authResponse.profile || null;
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, user }));
-    set({ user, token, isAuthenticated: true });
+    set({ user, token, isAuthenticated: !!token });
   },
 
   logout: () => {

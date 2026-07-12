@@ -41,7 +41,8 @@ export default function MovieDetail() {
 
   useEffect(() => {
     loadMovie();
-    moviesApi.getReviews(id).then(setReviews).catch(() => setReviews([]));
+    moviesApi.getReviews(id).then(setReviews).catch(() => setReviews([])
+  );
 
     if (isAuthenticated) {
       moviesApi
@@ -126,7 +127,8 @@ export default function MovieDetail() {
   }
 
   const avg = getAverage(movie.ratings);
-  const genreNames = (movie.genres || []).map((g) => g.genreName).join(', ') || 'Sin género cargado';
+  const genreNames = movie?.genres.map((g) => g.genreName).join(', ') || 'Sin género cargado';
+  
 
   return (
     <div className="container page">
