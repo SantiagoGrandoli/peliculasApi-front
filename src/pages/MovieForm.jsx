@@ -7,6 +7,21 @@ import { moviesApi } from '../api/moviesApi';
 import { useToastStore } from '../store/toastStore';
 import Loader from '../components/Loader';
 
+const normalizeGenreIds = (value) => {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => Number(item))
+      .filter((item) => Number.isFinite(item));
+  }
+
+  if (value === null || value === undefined || value === '') {
+    return [];
+  }
+
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? [numericValue] : [];
+};
+
 export default function MovieForm() {
   const params = useParams();
   const isEdit = Boolean(params.id);
@@ -49,7 +64,9 @@ export default function MovieForm() {
           title: movie.title,
           director: movie.director,
           year: movie.year,
-          genresIds: (movie.genres || []).map((g) => g.id),
+          genresIds: normalizeGenreIds(
+            (movie.genres || []).map((g) => g.id ?? g.genreId ?? g.genre?.id)
+          ),
           description: movie.description || '',
           posterUrl: movie.posterUrl || '',
         });
@@ -65,7 +82,7 @@ export default function MovieForm() {
       title: data.title,
       director: data.director,
       year: data.year,
-      genresIds: data.genresIds,
+      genresIds: normalizeGenreIds(data.genresIds),
       description: data.description || null,
       posterUrl: data.posterUrl || null,
     };
@@ -93,6 +110,8 @@ export default function MovieForm() {
     );
   }
 
+  const onError = (errors) => console.log(errors);
+
   return (
     <div className="container page" style={{ maxWidth: 640 }}>
       <Link href="/admin" style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
@@ -103,7 +122,7 @@ export default function MovieForm() {
         {isEdit ? 'Editar película' : 'Nueva película'}
       </h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="card" style={{ padding: 24 }}>
+      <form onSubmit={handleSubmit(onSubmit, onError)} noValidate className="card" style={{ padding: 24 }}>
         <div className="field">
           <label htmlFor="title">Título</label>
           <input id="title" {...register('title')} />
@@ -129,25 +148,29 @@ export default function MovieForm() {
           <Controller
             control={control}
             name="genresIds"
-            render={({ field }) => (
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 10,
-                  padding: '10px 12px',
-                  background: 'var(--surface-2)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 6,
-                }}
-              >
+            render={({ field }) => {
+              const selectedValues = normalizeGenreIds(field.value);
+
+              return (
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 10,
+                    padding: '10px 12px',
+                    background: 'var(--surface-2)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 6,
+                  }}
+                >
                 {genres.length === 0 && (
                   <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                     No hay géneros cargados todavía en el backend (creálos primero vía /api/genre).
                   </span>
                 )}
                 {genres.map((g) => {
-                  const checked = field.value.includes(g.id);
+                  const selectedId = Number(g.id);
+                  const checked = selectedValues.includes(selectedId);
                   return (
                     <label
                       key={g.id}
@@ -165,9 +188,9 @@ export default function MovieForm() {
                         checked={checked}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            field.onChange([...field.value, g.id]);
+                            field.onChange([...selectedValues, selectedId]);
                           } else {
-                            field.onChange(field.value.filter((id) => id !== g.id));
+                            field.onChange(selectedValues.filter((id) => Number(id) !== selectedId));
                           }
                         }}
                       />
@@ -175,8 +198,9 @@ export default function MovieForm() {
                     </label>
                   );
                 })}
-              </div>
-            )}
+                </div>
+              );
+            }}
           />
           {errors.genresIds && <span className="field-error">{errors.genresIds.message}</span>}
         </div>

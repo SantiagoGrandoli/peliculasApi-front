@@ -1,21 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { moviesApi } from '../api/moviesApi';
 import { useToastStore } from '../store/toastStore';
 import Loader from '../components/Loader';
-
-function computeGenreDistribution(movies) {
-  const counts = {};
-  for (const m of movies) {
-    for (const g of m.genres || []) {
-      counts[g.genreName] = (counts[g.genreName] || 0) + 1;
-    }
-  }
-  return Object.entries(counts)
-    .map(([genre, count]) => ({ genre, count }))
-    .sort((a, b) => b.count - a.count);
-}
 
 export default function AdminPanel() {
   const [stats, setStats] = useState(null);
@@ -70,8 +57,6 @@ export default function AdminPanel() {
     );
   }
 
-  const genreDistribution = computeGenreDistribution(movies);
-
   return (
     <div className="container page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
@@ -81,9 +66,14 @@ export default function AdminPanel() {
           </h1>
           <p style={{ color: 'var(--text-muted)', margin: '4px 0 0' }}>Estadísticas y gestión del catálogo.</p>
         </div>
-        <Link href="/admin/elementos/new" className="btn btn-primary">
-          + Nueva película
-        </Link>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <Link href="/admin/elementos/new" className="btn btn-primary">
+            + Nueva película
+          </Link>
+          <Link href="/admin/generos" className="btn btn-ghost">
+            Gestionar géneros
+          </Link>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 18, marginBottom: 32 }}>
@@ -91,26 +81,6 @@ export default function AdminPanel() {
         <StatCard label="Total de usuarios" value={stats.totalUsers} />
         <StatCard label="Total de valoraciones" value={stats.totalRatings} />
         <StatCard label="Total de reseñas" value={stats.totalReviews} />
-      </div>
-
-      <div className="card" style={{ padding: 24, marginBottom: 32 }}>
-        <h3 style={{ marginTop: 0 }}>Películas por género</h3>
-        {genreDistribution.length === 0 ? (
-          <p style={{ color: 'var(--text-muted)' }}>Todavía no hay películas con géneros cargados.</p>
-        ) : (
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={genreDistribution}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2d38" />
-              <XAxis dataKey="genre" stroke="#9298a8" fontSize={12} />
-              <YAxis stroke="#9298a8" allowDecimals={false} />
-              <Tooltip
-                contentStyle={{ background: '#1d2029', border: '1px solid #2a2d38', borderRadius: 8 }}
-                labelStyle={{ color: '#f1f0ec' }}
-              />
-              <Bar dataKey="count" fill="#e3b341" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        )}
       </div>
 
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
@@ -132,7 +102,7 @@ export default function AdminPanel() {
               <tr key={m.id} style={{ borderTop: '1px solid var(--border)' }}>
                 <td style={cellStyle}>#{m.id}</td>
                 <td style={cellStyle}>{m.title}</td>
-                <td style={cellStyle}>{(m.genres || []).map((g) => g.genreName).join(', ') || '—'}</td>
+                <td style={cellStyle}>{(m.genres || []).map((g) => g).join(', ') || '—'}</td>
                 <td style={cellStyle}>{m.year}</td>
                 <td style={{ ...cellStyle, display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                   <Link href={`/admin/elementos/${m.id}/editar`} className="btn btn-ghost btn-sm">

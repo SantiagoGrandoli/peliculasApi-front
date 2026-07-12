@@ -2,8 +2,6 @@ import { z } from "zod";
 
 const currentYear = new Date().getFullYear() + 2;
 
-// Coincide con CreateMovieDTO/UpdateMovieDTO del backend real:
-// { title, director, year, genresIds: number[], description?, posterUrl? }
 export const movieSchema = z.object({
   title: z
     .string()

@@ -9,7 +9,7 @@ function getAverageRating(movie) {
 
 export default function MovieCard({ movie }) {
   const avg = getAverageRating(movie);
-  const genreNames = (movie.genres || []).map((g) => g.genreName).join(", ");
+  const genreNames = movie.genres.map(g => g + " ");
 
   return (
     <Link
