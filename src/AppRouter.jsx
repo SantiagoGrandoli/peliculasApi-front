@@ -11,10 +11,11 @@ import Register from './pages/Register';
 import MoviesList from './pages/MoviesList';
 import NotFound from './pages/NotFound';
 
-// --- Lazy loading: componentes "pesados" cargados bajo demanda (requisito obligatorio) ---
 const MovieDetail = lazy(() => import('./pages/MovieDetail'));
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 const MovieForm = lazy(() => import('./pages/MovieForm'));
+const MyLists = lazy(() => import('./pages/MyLists'));
+const ListDetail = lazy(() => import('./pages/ListDetail'));
 
 export default function AppRouter() {
   return (
@@ -28,6 +29,18 @@ export default function AppRouter() {
 
           <Route path="/elementos" component={MoviesList} />
           <Route path="/elementos/:id" component={MovieDetail} />
+
+          <Route path="/mis-listas">
+            <ProtectedRoute>
+              <MyLists />
+            </ProtectedRoute>
+          </Route>
+
+          <Route path="/mis-listas/:id">
+            <ProtectedRoute>
+              <ListDetail />
+            </ProtectedRoute>
+          </Route>
 
           <Route path="/admin">
             <ProtectedRoute requireAdmin>

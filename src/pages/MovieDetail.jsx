@@ -4,6 +4,7 @@ import { moviesApi } from '../api/moviesApi';
 import { useAuthStore } from '../store/authStore';
 import { useToastStore } from '../store/toastStore';
 import Loader from '../components/Loader';
+import AddToListButton from '../components/AddToListButton';
 
 function getAverage(ratings) {
   if (!ratings || ratings.length === 0) return null;
@@ -76,7 +77,7 @@ export default function MovieDetail() {
       const result = await moviesApi.upsertRating(id, ratingDraft);
       setMyRating(result);
       push('¡Gracias por tu calificación!', 'success');
-      loadMovie(); // refresca el promedio
+      loadMovie(); 
     } catch (err) {
       push(err.message, 'error');
     } finally {
@@ -160,6 +161,9 @@ export default function MovieDetail() {
             {avg !== null && ` · ★ ${avg.toFixed(1)}/5 (${movie.ratings.length} valoraciones)`}
           </p>
           <p style={{ lineHeight: 1.6 }}>{movie.description}</p>
+
+          <div style={{ display: 'flex', gap: 10, marginTop: 28, flexWrap: 'wrap' }}>
+            {isAuthenticated && <AddToListButton movieId={movie.id} />}
 
           {isAdmin && (
             <div style={{ display: 'flex', gap: 10, marginTop: 28 }}>

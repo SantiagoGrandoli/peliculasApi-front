@@ -42,7 +42,13 @@ export default function Navbar() {
             Películas
           </Link>
 
-          {isAuthenticated && user?.role === 'Admin' && (
+          {isAuthenticated && (
+            <Link href="/mis-listas" style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>
+              Mis listas
+            </Link>
+          )}
+
+          {isAuthenticated && user?.roles?.includes('Admin') && (
             <Link href="/admin" style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>
               Admin
             </Link>
@@ -50,7 +56,7 @@ export default function Navbar() {
 
           {isAuthenticated ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span className="badge">{user?.role === 'Admin' ? '★ Admin' : user?.username}</span>
+              <span className="badge">{user?.roles?.includes('Admin') ? '★ Admin' : user?.username}</span>
               <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
                 Cerrar sesión
               </button>
