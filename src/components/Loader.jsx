@@ -1,7 +1,8 @@
-import React from 'react'
-
-export default function Loader() {
+export default function Loader({ label = "Cargando..." }) {
   return (
-    <div>Loader</div>
-  )
+    <div className="loader-wrap" role="status" aria-live="polite">
+      <div className="spinner" />
+      <span>{label}</span>
+    </div>
+  );
 }
