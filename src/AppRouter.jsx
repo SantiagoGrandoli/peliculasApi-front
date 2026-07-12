@@ -15,6 +15,7 @@ import NotFound from './pages/NotFound';
 const MovieDetail = lazy(() => import('./pages/MovieDetail'));
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 const MovieForm = lazy(() => import('./pages/MovieForm'));
+const GenreAdmin = lazy(() => import('./pages/GenreAdmin'));
 
 export default function AppRouter() {
   return (
@@ -44,6 +45,12 @@ export default function AppRouter() {
           <Route path="/admin/elementos/:id/editar">
             <ProtectedRoute requireAdmin>
               <MovieForm />
+            </ProtectedRoute>
+          </Route>
+
+          <Route path="/admin/generos">
+            <ProtectedRoute requireAdmin>
+              <GenreAdmin />
             </ProtectedRoute>
           </Route>
 

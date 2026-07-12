@@ -81,9 +81,14 @@ export default function AdminPanel() {
           </h1>
           <p style={{ color: 'var(--text-muted)', margin: '4px 0 0' }}>Estadísticas y gestión del catálogo.</p>
         </div>
-        <Link href="/admin/elementos/new" className="btn btn-primary">
-          + Nueva película
-        </Link>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <Link href="/admin/elementos/new" className="btn btn-primary">
+            + Nueva película
+          </Link>
+          <Link href="/admin/generos" className="btn btn-ghost">
+            Gestionar géneros
+          </Link>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 18, marginBottom: 32 }}>

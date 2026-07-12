@@ -18,6 +18,12 @@ remove: (id) => axiosClient.delete(`/movies/${id}`).then((r) => r.data),
 
 getGenres: () => axiosClient.get('/genre').then((r) => r.data),
 
+createGenre: (dto) => axiosClient.post('/genre', dto).then((r) => r.data),
+
+updateGenre: (id, dto) => axiosClient.put(`/genre/${id}`, dto).then((r) => r.data),
+
+removeGenre: (id) => axiosClient.delete(`/genre/${id}`).then((r) => r.data),
+
 getStats: () => axiosClient.get('/admin/stats').then((r) => r.data),
 
 upsertRating: (movieId, score) =>
