@@ -44,21 +44,12 @@ export default function Navbar() {
           </Link>
 
           {isAuthenticated && (
-<<<<<<< HEAD
             <Link href="/mis-listas" style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>
               Mis listas
             </Link>
           )}
 
           {isAuthenticated && user?.roles?.includes('Admin') && (
-=======
-            <Link href="/" style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-              Listas
-            </Link>
-          )}
-
-          {isAuthenticated && isAdmin && (
->>>>>>> 6d34b180f093ceb8de5299380e58752c857fe7d7
             <Link href="/admin" style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>
               Admin
             </Link>
@@ -68,11 +59,7 @@ export default function Navbar() {
 
           {isAuthenticated ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-<<<<<<< HEAD
               <span className="badge">{user?.roles?.includes('Admin') ? '★ Admin' : user?.username}</span>
-=======
-              <span className="badge">{isAdmin ? '★ Admin' : user?.userName}</span>
->>>>>>> 6d34b180f093ceb8de5299380e58752c857fe7d7
               <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
                 Cerrar sesión
               </button>

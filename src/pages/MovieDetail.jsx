@@ -239,5 +239,6 @@ export default function MovieDetail() {
         )}
       </div>
     </div>
+    </div>
   );
 }

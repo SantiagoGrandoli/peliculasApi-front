@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import ToastContainer from './components/ToastContainer';
 import ProtectedRoute from './components/ProtectedRoute';
 import Loader from './components/Loader';
+import GenreAdmin from './pages/GenreAdmin';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -14,12 +15,8 @@ import NotFound from './pages/NotFound';
 const MovieDetail = lazy(() => import('./pages/MovieDetail'));
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 const MovieForm = lazy(() => import('./pages/MovieForm'));
-<<<<<<< HEAD
 const MyLists = lazy(() => import('./pages/MyLists'));
 const ListDetail = lazy(() => import('./pages/ListDetail'));
-=======
-const GenreAdmin = lazy(() => import('./pages/GenreAdmin'));
->>>>>>> 6d34b180f093ceb8de5299380e58752c857fe7d7
 
 export default function AppRouter() {
   return (
