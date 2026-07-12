@@ -6,6 +6,7 @@ export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuthStore();
   const push = useToastStore((s) => s.push);
   const [, navigate] = useLocation();
+  const isAdmin = Array.isArray(user?.roles) ? user.roles.includes('Admin') : user?.roles === 'Admin';
 
   const handleLogout = () => {
     logout();
@@ -42,15 +43,17 @@ export default function Navbar() {
             Películas
           </Link>
 
-          {isAuthenticated && user?.role === 'Admin' && (
+          {isAuthenticated && isAdmin && (
             <Link href="/admin" style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>
               Admin
             </Link>
           )}
 
+          {console.log(user)}
+
           {isAuthenticated ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span className="badge">{user?.role === 'Admin' ? '★ Admin' : user?.username}</span>
+              <span className="badge">{isAdmin ? '★ Admin' : user?.userName}</span>
               <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
                 Cerrar sesión
               </button>

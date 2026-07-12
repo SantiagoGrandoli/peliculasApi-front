@@ -132,7 +132,7 @@ export default function AdminPanel() {
               <tr key={m.id} style={{ borderTop: '1px solid var(--border)' }}>
                 <td style={cellStyle}>#{m.id}</td>
                 <td style={cellStyle}>{m.title}</td>
-                <td style={cellStyle}>{(m.genres || []).map((g) => g.genreName).join(', ') || '—'}</td>
+                <td style={cellStyle}>{(m.genres || []).map((g) => g).join(', ') || '—'}</td>
                 <td style={cellStyle}>{m.year}</td>
                 <td style={{ ...cellStyle, display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                   <Link href={`/admin/elementos/${m.id}/editar`} className="btn btn-ghost btn-sm">
