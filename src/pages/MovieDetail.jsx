@@ -27,8 +27,19 @@ export default function MovieDetail() {
   const [myRating, setMyRating] = useState(null);
   const [ratingDraft, setRatingDraft] = useState(5);
   const [reviewDraft, setReviewDraft] = useState('');
+  const [editingReviewId, setEditingReviewId] = useState(null);
   const [savingRating, setSavingRating] = useState(false);
   const [savingReview, setSavingReview] = useState(false);
+  const [deletingReviewId, setDeletingReviewId] = useState(null);
+
+  const currentUserName = user?.userName || user?.username || '';
+  const isOwnReview = (review) => {
+    const ownerName = review?.userName || review?.username || '';
+    return (
+      (ownerName && currentUserName && ownerName.toLowerCase() === currentUserName.toLowerCase()) ||
+      Number(review?.userId) === Number(user?.id)
+    );
+  };
 
   const loadMovie = () => {
     setLoading(true);
@@ -88,20 +99,57 @@ export default function MovieDetail() {
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
-    if (reviewDraft.trim().length < 10) {
+    const content = reviewDraft.trim();
+
+    if (content.length < 10) {
       push('La reseña debe tener al menos 10 caracteres.', 'error');
       return;
     }
+
     setSavingReview(true);
     try {
-      await moviesApi.createReview(id, { content: reviewDraft, containsSpoilers: false });
+      if (editingReviewId) {
+        await moviesApi.updateReview(id, editingReviewId, { content, containsSpoilers: false });
+        push('Reseña actualizada.', 'success');
+      } else {
+        await moviesApi.createReview(id, { content, containsSpoilers: false });
+        push('Reseña publicada.', 'success');
+      }
+
       setReviewDraft('');
-      push('Reseña publicada.', 'success');
-      moviesApi.getReviews(id).then(setReviews);
+      setEditingReviewId(null);
+      const nextReviews = await moviesApi.getReviews(id);
+      setReviews(nextReviews);
     } catch (err) {
       push(err.message, 'error');
     } finally {
       setSavingReview(false);
+    }
+  };
+
+  const handleEditReview = (review) => {
+    setEditingReviewId(review.id);
+    setReviewDraft(review.content || '');
+  };
+
+  const handleCancelEditReview = () => {
+    setEditingReviewId(null);
+    setReviewDraft('');
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!confirm('¿Seguro que querés eliminar esta reseña?')) return;
+
+    setDeletingReviewId(reviewId);
+    try {
+      await moviesApi.deleteReview(id, reviewId);
+      push('Reseña eliminada.', 'success');
+      const nextReviews = await moviesApi.getReviews(id);
+      setReviews(nextReviews);
+    } catch (err) {
+      push(err.message, 'error');
+    } finally {
+      setDeletingReviewId(null);
     }
   };
 
@@ -164,20 +212,20 @@ export default function MovieDetail() {
           </p>
           <p style={{ lineHeight: 1.6 }}>{movie.description}</p>
 
-          <div style={{ display: 'flex', gap: 10, marginTop: 28, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 10, marginTop: 28, flexWrap: 'wrap', alignItems: 'center' }}>
             {isAuthenticated && <AddToListButton movieId={movie.id} />}
 
-          {isAdmin && (
-            <div style={{ display: 'flex', gap: 10, marginTop: 28 }}>
-              <Link href={`/admin/elementos/${movie.id}/editar`} className="btn btn-ghost">
-                Editar
-              </Link>
-              <button className="btn btn-danger" onClick={handleDelete} disabled={deleting}>
-                {deleting ? 'Eliminando...' : 'Eliminar'}
-              </button>
-            </div>
-          )}
-        </div>
+            {isAdmin && (
+              <div style={{ display: 'flex', gap: 10 }}>
+                <Link href={`/admin/elementos/${movie.id}/editar`} className="btn btn-ghost">
+                  Editar
+                </Link>
+                <button className="btn btn-danger" onClick={handleDelete} disabled={deleting}>
+                  {deleting ? 'Eliminando...' : 'Eliminar'}
+                </button>
+              </div>
+            )}
+          </div>
       </div>
 
       <div className="card" style={{ padding: 24, marginTop: 24 }}>
@@ -218,9 +266,16 @@ export default function MovieDetail() {
                 onChange={(e) => setReviewDraft(e.target.value)}
               />
             </div>
-            <button type="submit" className="btn btn-ghost btn-sm" disabled={savingReview}>
-              {savingReview ? 'Publicando...' : 'Publicar reseña'}
-            </button>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button type="submit" className="btn btn-ghost btn-sm" disabled={savingReview}>
+                {savingReview ? (editingReviewId ? 'Guardando...' : 'Publicando...') : editingReviewId ? 'Guardar cambios' : 'Publicar reseña'}
+              </button>
+              {editingReviewId && (
+                <button type="button" className="btn btn-ghost btn-sm" onClick={handleCancelEditReview}>
+                  Cancelar
+                </button>
+              )}
+            </div>
           </form>
         )}
 
@@ -230,9 +285,28 @@ export default function MovieDetail() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {reviews.map((r) => (
               <div key={r.id} style={{ borderTop: '1px solid var(--border)', paddingTop: 14 }}>
-                <strong style={{ color: 'var(--gold)' }}>{r.userName}</strong>
-                {r.containsSpoilers && <span className="badge" style={{ marginLeft: 8 }}>Spoilers</span>}
-                <p style={{ margin: '6px 0 0' }}>{r.content}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
+                  <div>
+                    <strong style={{ color: 'var(--gold)' }}>{r.userName}</strong>
+                    {r.containsSpoilers && <span className="badge" style={{ marginLeft: 8 }}>Spoilers</span>}
+                    <p style={{ margin: '6px 0 0' }}>{r.content}</p>
+                  </div>
+                  {isAuthenticated && isOwnReview(r) && (
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => handleEditReview(r)}>
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleDeleteReview(r.id)}
+                        disabled={deletingReviewId === r.id}
+                      >
+                        {deletingReviewId === r.id ? 'Eliminando...' : 'Eliminar'}
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>

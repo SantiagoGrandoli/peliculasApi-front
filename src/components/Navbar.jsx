@@ -59,7 +59,7 @@ export default function Navbar() {
 
           {isAuthenticated ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span className="badge">{user?.roles?.includes('Admin') ? '★ Admin' : user?.username}</span>
+              <span className="badge">{user?.roles?.includes('Admin') ? '★ Admin' : user?.userName}</span>
               <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
                 Cerrar sesión
               </button>
